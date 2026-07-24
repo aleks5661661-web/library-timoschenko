@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека Тимощенко</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 30px; }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .stats { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 15px; }
+        .stat-item { background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 20px; backdrop-filter: blur(10px); }
+        
+        .controls { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        button { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); }
+        .btn-secondary { background: #48bb78; color: white; }
+        .btn-secondary:hover { background: #38a169; }
+        .btn-danger { background: #f56565; color: white; }
+        .btn-danger:hover { background: #e53e3e; }
+        
+        .search-filter { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        input, select { padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
+        
+        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .book-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; position: relative; }
+        .book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .book-cover { font-size: 4em; text-align: center; margin-bottom: 15px; }
+        .book-title { font-size: 1.3em; font-weight: bold; color: #2d3748; margin-bottom: 8px; }
+        .book-author { color: #718096; margin-bottom: 5px; }
+        .book-genre { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 10px; }
+        .book-publisher { color: #4a5568; font-size: 14px; margin-bottom: 8px; }
+        .book-location { background: #edf2f7; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 13px; color: #2d3748; }
+        .book-notes { margin-top: 10px; color: #4a5568; font-size: 14px; font-style: italic; }
+        .book-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .btn-small { padding: 5px 10px; font-size: 12px; border-radius: 5px; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #2d3748; }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #4a5568; font-weight: 600; }
+        textarea { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; resize: vertical; min-height: 80px; }
+        .location-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        
+        .genre-input-wrapper { position: relative; }
+        .genre-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; }
+        .genre-suggestions.active { display: block; }
+        .suggestion-item { padding: 10px; cursor: pointer; transition: background 0.2s; }
+        .suggestion-item:hover { background: #f7fafc; }
+        
+        .empty-state { text-align: center; color: white; padding: 60px 20px; }
+        .empty-state h3 { font-size: 1.5em; margin-bottom: 10px; }
+        
+        @media (max-width: 768px) {
+            .search-filter { grid-template-columns: 1fr; }
+            .location-fields { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Библиотека Тимощенко</h1>
+            <div class="stats">
+                <div class="stat-item">Всего книг: <span id="totalBooks">0</span></div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="btn-group">
+                <button class="btn-primary" onclick="openModal()">➕ Добавить книгу</button>
+                <button class="btn-secondary" onclick="exportJSON()">💾 Экспорт JSON</button>
+                <button class="btn-secondary" onclick="exportHTML()">📄 Экспорт HTML</button>
+                <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 Импорт</button>
+                <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(event)">
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Поиск по названию или автору..." oninput="filterBooks()">
+                <select id="genreFilter" onchange="filterBooks()">
+                    <option value="">Все жанры</option>
+                </select>
+                <select id="shelfFilter" onchange="filterBooks()">
+                    <option value="">Все шкафы</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="booksContainer" class="books-grid"></div>
+        
+        <div id="emptyState" class="empty-state" style="display:none">
+            <h3>Библиотека пуста</h3>
+            <p>Добавьте свою первую книгу!</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Добавить книгу</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="bookForm" onsubmit="saveBook(event)">
+                <input type="hidden" id="bookId">
+                
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" id="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Автор *</label>
+                    <input type="text" id="author" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Жанр (выберите или введите свой)</label>
+                    <div class="genre-input-wrapper">
+                        <input type="text" id="genre" placeholder="Начните вводить..." oninput="showGenreSuggestions()" onfocus="showGenreSuggestions()">
+                        <div id="genreSuggestions" class="genre-suggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Издательство</label>
+                    <input type="text" id="publisher" placeholder="Например: АСТ, Эксмо...">
+                </div>
+                
+                <div class="form-group">
+                    <label>Год издания</label>
+                    <input type="number" id="year" min="1000" max="2026">
+                </div>
+                
+                <div class="form-group">
+                    <label>Место хранения</label>
+                    <div class="location-fields">
+                        <input type="text" id="shelf" placeholder="Шкаф">
+                        <input type="text" id="row" placeholder="Ряд">
+                        <input type="text" id="shelve" placeholder="Полка">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Заметки</label>
+                    <textarea id="notes" placeholder="Ваши впечатления, цитаты, мысли..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width:100%">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Импортируем Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Ключи уже вставлены ✅
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjsqkCRa5cISrx3VdQOU9kzMly-BiiJnw",
+            authDomain: "library-timoschenko.firebaseapp.com",
+            projectId: "library-timoschenko",
+            storageBucket: "library-timoschenko.firebasestorage.app",
+            messagingSenderId: "262950153196",
+            appId: "1:262950153196:web:2581d32274a2eed8b72ec9"
+        };
+
+        // Инициализация
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const booksCol = collection(db, "books");
+
+        let books = []; // Локальный кэш для отображения
+
+        // === ФУНКЦИИ ИНТЕРФЕЙСА ===
+        
+        // Загрузка книг в реальном времени
+        function loadBooks() {
+            onSnapshot(booksCol, (snapshot) => {
+                books = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateFilters();
+                renderBooks();
+            });
+        }
+
+        // Сохранение новой книги
+        async function saveBook(event) {
+            event.preventDefault();
+            const bookId = document.getElementById('bookId').value;
+            
+            const bookData = {
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                genre: document.getElementById('genre').value || null,
+                publisher: document.getElementById('publisher').value || null,
+                year: document.getElementById('year').value || null,
+                shelf: document.getElementById('shelf').value || null,
+                row: document.getElementById('row').value || null,
+                shelve: document.getElementById('shelve').value || null,
+                notes: document.getElementById('notes').value || ''
+            };
+
+            try {
+                if (bookId) {
+                    await updateDoc(doc(db, "books", bookId), bookData);
+                } else {
+                    await addDoc(booksCol, bookData);
+                }
+                closeModal();
+            } catch (e) {
+                alert("Ошибка сохранения: " + e.message);
+            }
+        }
+
+        // Удаление книги
+        async function deleteBook(id) {
+            if (confirm('Удалить эту книгу?')) {
+                await deleteDoc(doc(db, "books", id));
+            }
+        }
+
+        // Экспорт в JSON (теперь берет данные из облака)
+        function exportJSON() {
+            const dataStr = JSON.stringify(books, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `library_timoschenko_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        // Импорт из JSON (добавляет книги в облако)
+        async function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        for (const book of imported) {
+                            // Удаляем ID, чтобы Firestore создал новый
+                            const { id, ...data } = book; 
+                            await addDoc(booksCol, data);
+                        }
+                        alert(`Импортировано ${imported.length} книг`);
+                    }
+                } catch (err) {
+                    alert('Ошибка импорта');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+        
+        const defaultGenres = ['Фантастика', 'Детектив', 'Роман', 'Научная литература', 'Философия', 'Искусство', 'Психология', 'Поэзия', 'История', 'Биография', 'Приключения', 'Учебная литература', 'Юридическая литература', 'Религия', 'Финансы', 'Логопедия', 'Другое'];
+        const genreEmojis = {'Фантастика': '🚀', 'Детектив': '🔍', 'Роман': '💕', 'Научная литература': '🔬', 'Философия': '🤔', 'Искусство': '🎨', 'Психология': '', 'Поэзия': '✍️', 'История': '📜', 'Биография': '👤', 'Приключения': '⚔️', 'Учебная литература': '📚', 'Юридическая литература': '⚖️', 'Религия': '🙏', 'Финансы': '', 'Логопедия': '️', 'Другое': '📖'};
+
+        function getAllGenres() {
+            const genres = new Set(defaultGenres);
+            books.forEach(book => { if (book.genre) genres.add(book.genre); });
+            return Array.from(genres).sort();
+        }
+
+        function updateFilters() {
+            const genres = getAllGenres();
+            const genreSelect = document.getElementById('genreFilter');
+            const currentGenreValue = genreSelect.value;
+            genreSelect.innerHTML = '<option value="">Все жанры</option>';
+            genres.forEach(genre => { genreSelect.innerHTML += `<option value="${genre}">${genre}</option>`; });
+            genreSelect.value = currentGenreValue;
+
+            const shelves = [...new Set(books.map(b => b.shelf).filter(s => s))];
+            const shelfSelect = document.getElementById('shelfFilter');
+            const currentShelfValue = shelfSelect.value;
+            shelfSelect.innerHTML = '<option value="">Все шкафы</option>';
+            shelves.forEach(shelf => { shelfSelect.innerHTML += `<option value="${shelf}">${shelf}</option>`; });
+            shelfSelect.value = currentShelfValue;
+        }
+
+        function showGenreSuggestions() {
+            const input = document.getElementById('genre');
+            const suggestionsDiv = document.getElementById('genreSuggestions');
+            const inputValue = input.value.toLowerCase();
+            const allGenres = getAllGenres();
+            const filtered = allGenres.filter(g => g.toLowerCase().includes(inputValue));
+            if (filtered.length > 0 && inputValue.length > 0) {
+                suggestionsDiv.innerHTML = filtered.map(genre => `<div class="suggestion-item" onclick="selectGenre('${genre}')">${genre}</div>`).join('');
+                suggestionsDiv.classList.add('active');
+            } else {
+                suggestionsDiv.classList.remove('active');
+            }
+        }
+
+        function selectGenre(genre) {
+            document.getElementById('genre').value = genre;
+            document.getElementById('genreSuggestions').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.genre-input-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('genreSuggestions').classList.remove('active');
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderBooks(filteredBooks = null) {
+            const container = document.getElementById('booksContainer');
+            const emptyState = document.getElementById('emptyState');
+            const booksToRender = filteredBooks || books;
+            if (booksToRender.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                document.getElementById('totalBooks').textContent = 0;
+                return;
+            }
+            emptyState.style.display = 'none';
+            container.innerHTML = booksToRender.map(book => `
+                <div class="book-card">
+                    <div class="book-actions">
+                        <button class="btn-small btn-primary" onclick="editBook('${book.id}')">✏️</button>
+                        <button class="btn-small btn-danger" onclick="deleteBook('${book.id}')">️</button>
+                    </div>
+                    <div class="book-cover">${genreEmojis[book.genre] || '📖'}</div>
+                    <div class="book-title">${escapeHtml(book.title)}</div>
+                    <div class="book-author">${escapeHtml(book.author)}</div>
+                    <span class="book-genre">${escapeHtml(book.genre || 'Без жанра')}</span>
+                    ${book.publisher ? `<div class="book-publisher">📖 ${escapeHtml(book.publisher)}</div>` : ''}
+                    ${book.year ? `<div style="color:#718096;font-size:14px;margin-top:5px">📅 ${book.year}</div>` : ''}
+                    ${(book.shelf || book.row || book.shelve) ? `<div class="book-location">📍 ${book.shelf ? `Шкаф: ${escapeHtml(book.shelf)}` : ''}${book.row ? `| Ряд: ${escapeHtml(book.row)}` : ''}${book.shelve ? `| Полка: ${escapeHtml(book.shelve)}` : ''}</div>` : ''}
+                    ${book.notes ? `<div class="book-notes">${escapeHtml(book.notes)}</div>` : ''}
+                </div>
+            `).join('');
+            document.getElementById('totalBooks').textContent = books.length;
+        }
+
+        function filterBooks() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const genre = document.getElementById('genreFilter').value;
+            const shelf = document.getElementById('shelfFilter').value;
+            const filtered = books.filter(book => {
+                const matchesSearch = !search || book.title.toLowerCase().includes(search) || book.author.toLowerCase().includes(search);
+                const matchesGenre = !genre || book.genre === genre;
+                const matchesShelf = !shelf || book.shelf === shelf;
+                return matchesSearch && matchesGenre && matchesShelf;
+            });
+            renderBooks(filtered);
+        }
+
+        function openModal(bookId = null) {
+            const modal = document.getElementById('bookModal');
+            const form = document.getElementById('bookForm');
+            const title = document.getElementById('modalTitle');
+            form.reset();
+            document.getElementById('bookId').value = '';
+            document.getElementById('genreSuggestions').classList.remove('active');
+            if (bookId) {
+                const book = books.find(b => b.id === bookId);
+                if (book) {
+                    title.textContent = 'Редактировать книгу';
+                    document.getElementById('bookId').value = book.id;
+                    document.getElementById('title').value = book.title;
+                    document.getElementById('author').value = book.author;
+                    document.getElementById('genre').value = book.genre || '';
+                    document.getElementById('publisher').value = book.publisher || '';
+                    document.getElementById('year').value = book.year || '';
+                    document.getElementById('shelf').value = book.shelf || '';
+                    document.getElementById('row').value = book.row || '';
+                    document.getElementById('shelve').value = book.shelve || '';
+                    document.getElementById('notes').value = book.notes || '';
+                }
+            } else {
+                title.textContent = 'Добавить книгу';
+            }
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('bookModal').classList.remove('active');
+            document.getElementById('genreSuggestions').classList.remove('active');
+        }
+
+        function editBook(bookId) { openModal(bookId); }
+
+        // Экспорт HTML
+        function exportHTML() {
+            const htmlContent = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Библиотека Тимощенко - ${new Date().toLocaleDateString('ru-RU')}</title><style>body{font-family:Arial,sans-serif;padding:40px;background:#f5f5f5}h1{color:#667eea;text-align:center}.book{background:white;padding:20px;margin:15px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.title{font-size:1.3em;font-weight:bold;color:#2d3748}.author{color:#718096;margin:5px 0}.genre{display:inline-block;background:#667eea;color:white;padding:4px 12px;border-radius:12px;font-size:12px;margin:5px 0}.meta{color:#4a5568;font-size:0.9em;margin-top:10px}.location{background:#edf2f7;padding:8px;border-radius:5px;margin-top:10px;font-size:0.9em}.notes{font-style:italic;color:#4a5568;margin-top:10px}</style></head><body><h1> Библиотека Тимощенко</h1><p style="text-align:center;color:#718096">Всего книг: ${books.length}</p>${books.map(book => `<div class="book"><div class="title">${escapeHtml(book.title)}</div><div class="author">${escapeHtml(book.author)}</div>${book.genre ? `<span class="genre">${escapeHtml(book.genre)}</span>` : ''}<div class="meta">${book.publisher ? `Издательство: ${book.publisher}` : ''}${book.year ? `| Год: ${book.year}` : ''}</div>${(book.shelf || book.row || book.shelve) ? `<div class="location">📍 ${book.shelf ? `Шкаф: ${book.shelf}` : ''}${book.row ? `| Ряд: ${book.row}` : ''}${book.shelve ? `| Полка: ${book.shelve}` : ''}</div>` : ''}${book.notes ? `<div class="notes">${escapeHtml(book.notes)}</div>` : ''}</div>`).join('')}</body></html>`;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `library_timoschenko_${new Date().toISOString().split('T')[0]}.html`;
+            a.click();
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookModal');
+            if (event.target === modal) closeModal();
+        }
+
+        // Запускаем загрузку при старте
+        loadBooks();
+    </script>
+</body>
+</html>
