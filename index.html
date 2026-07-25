@@ -2,341 +2,185 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Библиотека Тимощенко</title>
-    <!-- Подключаем современный шрифт Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 12px 40px rgba(102, 126, 234, 0.25);
             --text-main: #2d3748;
             --text-secondary: #718096;
             --accent-color: #667eea;
             --radius-lg: 20px;
             --radius-md: 12px;
-            --radius-sm: 8px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--primary-gradient);
-            background-attachment: fixed; /* Градиент не двигается при скролле */
+            background-attachment: fixed;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
             color: var(--text-main);
+            /* Исправление прокрутки на iOS */
+            overscroll-behavior: none; 
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 40px; }
 
-        /* --- Header --- */
-        header { 
-            text-align: center; 
-            color: white; 
-            margin-bottom: 40px; 
-            animation: fadeInDown 0.8s ease-out;
-        }
+        header { text-align: center; color: white; margin-bottom: 30px; }
+        header h1 { font-size: 2.2em; font-weight: 700; margin-bottom: 15px; text-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         
-        header h1 { 
-            font-size: 3em; 
-            font-weight: 700; 
-            margin-bottom: 15px; 
-            letter-spacing: -1px;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-        }
-
-        .stats { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        
+        .stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .stat-item { 
-            background: rgba(255,255,255,0.2); 
-            padding: 12px 24px; 
-            border-radius: 50px; 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            font-weight: 500;
-            font-size: 0.95em;
-            transition: transform 0.3s;
+            background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 50px; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); 
+            font-weight: 500; font-size: 0.9em; color: white;
         }
-        .stat-item:hover { transform: translateY(-3px); background: rgba(255,255,255,0.3); }
 
-        /* --- Controls Panel (Glass Effect) --- */
         .controls { 
-            background: var(--glass-bg); 
-            padding: 25px; 
-            border-radius: var(--radius-lg); 
-            margin-bottom: 30px; 
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--glass-border);
-            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+            background: var(--glass-bg); padding: 20px; border-radius: var(--radius-lg); 
+            margin-bottom: 25px; box-shadow: var(--shadow-soft); 
         }
 
-        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         
         button { 
-            padding: 12px 24px; 
-            border: none; 
-            border-radius: var(--radius-md); 
-            cursor: pointer; 
-            font-size: 14px; 
-            font-weight: 600; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            padding: 14px 20px; border: none; border-radius: var(--radius-md); 
+            cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.2s; 
+            font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            /* Улучшение кликабельности на iOS */
+            touch-action: manipulation; 
+            min-height: 48px;
         }
 
-        .btn-primary { 
-            background: var(--accent-color); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        .btn-primary:hover { 
-            background: #5a6fd6; 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-        }
+        .btn-primary { background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .btn-secondary { background: white; color: var(--text-main); border: 1px solid #e2e8f0; }
+        .btn-secondary:active { background: #f7fafc; transform: scale(0.98); }
 
-        .btn-secondary { 
-            background: white; 
-            color: var(--text-main); 
-            border: 1px solid #e2e8f0;
-        }
-        .btn-secondary:hover { 
-            background: #f7fafc; 
-            border-color: #cbd5e0; 
-            transform: translateY(-2px);
-        }
+        .search-filter { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 768px) { .search-filter { grid-template-columns: 2fr 1fr 1fr; } }
 
-        .search-filter { 
-            display: grid; 
-            grid-template-columns: 2fr 1fr 1fr; 
-            gap: 15px; 
-        }
-
-        input, select { 
-            padding: 12px 16px; 
-            border: 2px solid transparent; 
-            background: #f7fafc;
-            border-radius: var(--radius-md); 
-            font-size: 14px; 
-            width: 100%; 
-            font-family: inherit;
-            transition: all 0.3s;
+        /* === ИСПРАВЛЕНИЕ ДЛЯ IOS ПОЛЕЙ ВВОДА === */
+        input, select, textarea { 
+            width: 100%; padding: 14px 16px; 
+            border: 2px solid transparent; background: #f7fafc;
+            border-radius: var(--radius-md); font-size: 16px; /* 16px предотвращает зум на iPhone при вводе */
+            font-family: inherit; transition: all 0.3s;
+            -webkit-appearance: none; appearance: none; /* Сброс нативных стилей iOS */
+            color: #1a202c; /* Явный цвет текста */
         }
         
-        input:focus, select:focus { 
-            outline: none; 
-            background: white;
-            border-color: var(--accent-color); 
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        input:focus, select:focus, textarea:focus { 
+            outline: none; background: white;
+            border-color: var(--accent-color); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
-        /* --- Books Grid --- */
-        .books-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
+        /* Placeholder тоже делаем темным, чтобы было видно */
+        ::placeholder { color: #a0aec0; opacity: 1; }
 
+        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
         .book-card { 
-            background: white; 
-            border-radius: var(--radius-lg); 
-            padding: 25px; 
-            box-shadow: var(--shadow-soft); 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            position: relative; 
-            border: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
+            background: white; border-radius: var(--radius-lg); padding: 20px; 
+            box-shadow: var(--shadow-soft); position: relative; border: 1px solid rgba(0,0,0,0.05);
+            display: flex; flex-direction: column;
         }
 
-        .book-card:hover { 
-            transform: translateY(-8px) scale(1.02); 
-            box-shadow: var(--shadow-hover); 
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-
-        .book-cover { 
-            font-size: 3.5em; 
-            text-align: center; 
-            margin-bottom: 15px; 
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-            transition: transform 0.3s;
-        }
-        .book-card:hover .book-cover { transform: scale(1.1) rotate(5deg); }
-
-        .book-title { 
-            font-size: 1.25em; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            margin-bottom: 8px; 
-            line-height: 1.3;
-        }
-
-        .book-author { 
-            color: var(--text-secondary); 
-            margin-bottom: 12px; 
-            font-size: 0.95em;
-            font-weight: 500;
-        }
-
+        .book-cover { font-size: 3em; text-align: center; margin-bottom: 10px; }
+        .book-title { font-size: 1.2em; font-weight: 700; color: var(--text-main); margin-bottom: 5px; line-height: 1.3; }
+        .book-author { color: var(--text-secondary); margin-bottom: 10px; font-size: 0.95em; }
+        
         .book-genre { 
-            display: inline-block; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-            padding: 6px 14px; 
-            border-radius: 50px; 
-            font-size: 11px; 
-            font-weight: 600; 
-            margin-bottom: 12px; 
-            align-self: flex-start;
-            letter-spacing: 0.5px;
+            display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; padding: 5px 12px; border-radius: 50px; font-size: 11px; 
+            font-weight: 600; margin-bottom: 12px; align-self: flex-start;
         }
 
-        .book-meta {
-            margin-top: auto; /* Прижимает мета-информацию к низу карточки */
-            padding-top: 15px;
-            border-top: 1px solid #edf2f7;
-        }
-
-        .book-publisher { color: var(--text-secondary); font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;}
+        .book-meta { margin-top: auto; padding-top: 12px; border-top: 1px solid #edf2f7; }
+        .book-publisher { color: var(--text-secondary); font-size: 13px; margin-bottom: 4px; }
         
         .book-location { 
-            background: #f0f4ff; 
-            padding: 10px; 
-            border-radius: var(--radius-sm); 
-            margin-top: 8px; 
-            font-size: 12px; 
-            color: #4a5568; 
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            background: #f0f4ff; padding: 8px; border-radius: 8px; margin-top: 6px; 
+            font-size: 12px; color: #4a5568; font-weight: 500;
         }
 
         .book-notes { 
-            margin-top: 12px; 
-            color: var(--text-secondary); 
-            font-size: 13px; 
-            font-style: italic; 
-            line-height: 1.5;
-            background: #fffaf0;
-            padding: 10px;
-            border-radius: var(--radius-sm);
-            border-left: 3px solid #ed8936;
+            margin-top: 10px; color: var(--text-secondary); font-size: 13px; font-style: italic; 
+            background: #fffaf0; padding: 8px; border-radius: 8px; border-left: 3px solid #ed8936;
         }
 
-        .book-actions { 
-            position: absolute; 
-            top: 15px; 
-            right: 15px; 
-            display: flex; 
-            gap: 8px; 
-            opacity: 0; 
-            transition: opacity 0.3s;
+        /* Кнопки действий всегда видны на мобильных */
+        .book-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+        @media (min-width: 768px) { 
+            .book-actions { opacity: 0; transition: opacity 0.3s; } 
+            .book-card:hover .book-actions { opacity: 1; } 
         }
-        .book-card:hover .book-actions { opacity: 1; }
 
         .btn-small { 
-            padding: 8px; 
-            font-size: 14px; 
-            border-radius: 50%; 
-            width: 36px; 
-            height: 36px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            background: white;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 8px; font-size: 14px; border-radius: 50%; width: 36px; height: 36px; 
+            display: flex; align-items: center; justify-content: center;
+            background: white; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-small:hover { transform: scale(1.1); }
-        .btn-small.btn-danger:hover { background: #fff5f5; border-color: #feb2b2; color: #c53030; }
-        .btn-small.btn-primary:hover { background: #ebf4ff; border-color: #bee3f8; color: #3182ce; }
 
-        /* --- Modal --- */
+        /* Modal fixes for iOS */
         .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px);
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center; 
-            opacity: 0;
-            transition: opacity 0.3s;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; 
+            justify-content: center; align-items: flex-end; /* На iOS модалка снизу удобнее */
         }
-        .modal.active { display: flex; opacity: 1; }
+        @media (min-width: 768px) { .modal { align-items: center; } }
+        
+        .modal.active { display: flex; }
 
         .modal-content { 
-            background: white; 
-            padding: 35px; 
-            border-radius: var(--radius-lg); 
-            max-width: 550px; 
-            width: 90%; 
-            max-height: 90vh; 
-            overflow-y: auto; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: translateY(20px);
-            transition: transform 0.3s;
+            background: white; padding: 25px; border-radius: 20px 20px 0 0; 
+            width: 100%; max-height: 90vh; overflow-y: auto; 
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
-        .modal.active .modal-content { transform: translateY(0); }
+        @media (min-width: 768px) { 
+            .modal-content { border-radius: 20px; width: 90%; max-width: 550px; } 
+        }
 
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .modal-header h2 { color: var(--text-main); font-size: 1.5em; font-weight: 700; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 1.4em; font-weight: 700; }
         .close-btn { 
-            background: #f7fafc; border: none; font-size: 20px; cursor: pointer; 
-            color: var(--text-secondary); width: 36px; height: 36px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+            background: #f7fafc; border: none; font-size: 24px; cursor: pointer; 
+            color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
         }
-        .close-btn:hover { background: #edf2f7; color: var(--text-main); transform: rotate(90deg); }
 
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 600; font-size: 14px; }
-        
-        textarea { 
-            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: var(--radius-md); 
-            resize: vertical; min-height: 100px; font-family: inherit; transition: all 0.3s;
-        }
-        textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
-
-        .location-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-main); font-weight: 600; font-size: 14px; }
+        textarea { min-height: 80px; resize: vertical; }
+        .location-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
         .genre-input-wrapper { position: relative; }
         .genre-suggestions { 
-            position: absolute; top: 100%; left: 0; right: 0; 
-            background: white; border: 1px solid #e2e8f0; border-top: none; 
-            border-radius: 0 0 var(--radius-md) var(--radius-md); 
+            position: absolute; top: 100%; left: 0; right: 0; background: white; 
+            border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; 
             max-height: 200px; overflow-y: auto; z-index: 100; display: none; 
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         .genre-suggestions.active { display: block; }
-        .suggestion-item { padding: 12px 16px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
-        .suggestion-item:hover { background: #f7fafc; color: var(--accent-color); }
+        .suggestion-item { padding: 12px 16px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f7fafc; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:active { background: #ebf4ff; color: var(--accent-color); }
 
-        .empty-state { text-align: center; color: white; padding: 80px 20px; animation: fadeIn 1s; }
-        .empty-state h3 { font-size: 1.8em; margin-bottom: 15px; font-weight: 600; }
-        .empty-state p { opacity: 0.9; font-size: 1.1em; }
-
-        /* Animations */
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .empty-state { text-align: center; color: white; padding: 60px 20px; }
+        .empty-state h3 { font-size: 1.5em; margin-bottom: 10px; }
 
         @media (max-width: 768px) {
-            .search-filter { grid-template-columns: 1fr; }
             .location-fields { grid-template-columns: 1fr; }
-            header h1 { font-size: 2.2em; }
-            .book-actions { opacity: 1; } /* На мобильных кнопки видны всегда */
+            header h1 { font-size: 1.8em; }
             .btn-group { justify-content: stretch; }
-            .btn-group button { flex: 1; justify-content: center; }
+            .btn-group button { flex: 1; }
         }
     </style>
 </head>
@@ -345,21 +189,20 @@
         <header>
             <h1>📚 Библиотека Тимощенко</h1>
             <div class="stats">
-                <div class="stat-item">📖 Всего книг: <span id="totalBooks">0</span></div>
+                <div class="stat-item">📖 Всего: <span id="totalBooks">0</span></div>
             </div>
         </header>
 
         <div class="controls">
             <div class="btn-group">
-                <button class="btn-primary" onclick="openModal()">➕ Добавить книгу</button>
-                <button class="btn-secondary" onclick="exportJSON()">💾 Экспорт JSON</button>
-                <button class="btn-secondary" onclick="exportHTML()"> Экспорт HTML</button>
-                <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 Импорт</button>
+                <button class="btn-primary" onclick="openModal()">➕ Добавить</button>
+                <button class="btn-secondary" onclick="exportJSON()">💾 JSON</button>
+                <button class="btn-secondary" onclick="document.getElementById('importFile').click()"> Импорт</button>
                 <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(event)">
             </div>
             
             <div class="search-filter">
-                <input type="text" id="searchInput" placeholder=" Поиск по названию, автору, жанру..." oninput="filterBooks()">
+                <input type="text" id="searchInput" placeholder="🔍 Поиск..." oninput="filterBooks()" autocomplete="off">
                 <select id="genreFilter" onchange="filterBooks()">
                     <option value="">Все жанры</option>
                 </select>
@@ -373,7 +216,7 @@
         
         <div id="emptyState" class="empty-state" style="display:none">
             <h3>Библиотека пуста</h3>
-            <p>Добавьте свою первую книгу, чтобы начать коллекцию!</p>
+            <p>Нажмите «Добавить», чтобы создать первую запись</p>
         </div>
     </div>
 
@@ -381,7 +224,7 @@
     <div id="bookModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Добавить книгу</h2>
+                <h2 id="modalTitle">Новая книга</h2>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <form id="bookForm" onsubmit="saveBook(event)">
@@ -389,30 +232,30 @@
                 
                 <div class="form-group">
                     <label>Название *</label>
-                    <input type="text" id="title" required placeholder="Введите название книги">
+                    <input type="text" id="title" required placeholder="Например: Война и мир">
                 </div>
                 
                 <div class="form-group">
                     <label>Автор *</label>
-                    <input type="text" id="author" required placeholder="Имя автора">
+                    <input type="text" id="author" required placeholder="Например: Л.Н. Толстой">
                 </div>
                 
                 <div class="form-group">
                     <label>Жанр</label>
                     <div class="genre-input-wrapper">
-                        <input type="text" id="genre" placeholder="Начните вводить или выберите..." oninput="showGenreSuggestions()" onfocus="showGenreSuggestions()">
+                        <input type="text" id="genre" placeholder="Выберите или введите..." oninput="showGenreSuggestions()" onfocus="showGenreSuggestions()" autocomplete="off">
                         <div id="genreSuggestions" class="genre-suggestions"></div>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Издательство</label>
-                    <input type="text" id="publisher" placeholder="Например: АСТ, Эксмо...">
+                    <input type="text" id="publisher" placeholder="АСТ, Эксмо...">
                 </div>
                 
                 <div class="form-group">
                     <label>Год издания</label>
-                    <input type="number" id="year" min="1000" max="2026" placeholder="2024">
+                    <input type="number" id="year" min="1000" max="2030" placeholder="2024">
                 </div>
                 
                 <div class="form-group">
@@ -426,10 +269,10 @@
                 
                 <div class="form-group">
                     <label>Заметки</label>
-                    <textarea id="notes" placeholder="Ваши впечатления, цитаты, мысли..."></textarea>
+                    <textarea id="notes" placeholder="Ваши мысли о книге..."></textarea>
                 </div>
                 
-                <button type="submit" class="btn-primary" style="width:100%; justify-content: center; padding: 14px;">Сохранить книгу</button>
+                <button type="submit" class="btn-primary" style="width:100%; padding: 16px;">Сохранить</button>
             </form>
         </div>
     </div>
@@ -452,7 +295,7 @@
         const booksCol = collection(db, "books");
         let books = [];
 
-        // === ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ КНОПОК ===
+        // === ГЛОБАЛЬНЫЕ ФУНКЦИИ (FIXED FOR IOS) ===
         
         window.loadBooks = function() {
             onSnapshot(booksCol, (snapshot) => {
@@ -464,27 +307,40 @@
 
         window.saveBook = async function(event) {
             event.preventDefault();
-            const bookId = document.getElementById('bookId').value;
-            const bookData = {
-                title: document.getElementById('title').value,
-                author: document.getElementById('author').value,
-                genre: document.getElementById('genre').value || null,
-                publisher: document.getElementById('publisher').value || null,
-                year: document.getElementById('year').value || null,
-                shelf: document.getElementById('shelf').value || null,
-                row: document.getElementById('row').value || null,
-                shelve: document.getElementById('shelve').value || null,
-                notes: document.getElementById('notes').value || ''
-            };
+            // Блокируем кнопку сохранения во избежание двойного нажатия на медленном интернете
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Сохранение...';
+            btn.disabled = true;
+
             try {
+                const bookId = document.getElementById('bookId').value;
+                const bookData = {
+                    title: document.getElementById('title').value.trim(),
+                    author: document.getElementById('author').value.trim(),
+                    genre: document.getElementById('genre').value.trim() || null,
+                    publisher: document.getElementById('publisher').value.trim() || null,
+                    year: document.getElementById('year').value || null,
+                    shelf: document.getElementById('shelf').value.trim() || null,
+                    row: document.getElementById('row').value.trim() || null,
+                    shelve: document.getElementById('shelve').value.trim() || null,
+                    notes: document.getElementById('notes').value.trim() || ''
+                };
+
                 if (bookId) await updateDoc(doc(db, "books", bookId), bookData);
                 else await addDoc(booksCol, bookData);
+                
                 closeModal();
-            } catch (e) { alert("Ошибка сохранения: " + e.message); }
+            } catch (e) { 
+                alert("Ошибка: " + e.message); 
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         };
 
         window.deleteBook = async function(id) {
-            if (confirm('Удалить эту книгу?')) await deleteDoc(doc(db, "books", id));
+            if (confirm('Удалить книгу?')) await deleteDoc(doc(db, "books", id));
         };
 
         window.exportJSON = function() {
@@ -509,9 +365,9 @@
                             const { id, ...data } = book; 
                             await addDoc(booksCol, data);
                         }
-                        alert(`Импортировано ${imported.length} книг`);
+                        alert(`Загружено: ${imported.length}`);
                     }
-                } catch (err) { alert('Ошибка импорта'); }
+                } catch (err) { alert('Ошибка файла'); }
             };
             reader.readAsText(file);
             event.target.value = '';
@@ -520,17 +376,22 @@
         window.openModal = function(bookId = null) {
             const modal = document.getElementById('bookModal');
             const form = document.getElementById('bookForm');
-            const title = document.getElementById('modalTitle');
+            const titleEl = document.getElementById('modalTitle');
+            
             form.reset();
             document.getElementById('bookId').value = '';
             document.getElementById('genreSuggestions').classList.remove('active');
+            
+            // Фокус на первое поле для удобства на мобильном
+            setTimeout(() => document.getElementById('title').focus(), 100);
+
             if (bookId) {
                 const book = books.find(b => b.id === bookId);
                 if (book) {
-                    title.textContent = 'Редактировать книгу';
+                    titleEl.textContent = 'Редактирование';
                     document.getElementById('bookId').value = book.id;
-                    document.getElementById('title').value = book.title;
-                    document.getElementById('author').value = book.author;
+                    document.getElementById('title').value = book.title || '';
+                    document.getElementById('author').value = book.author || '';
                     document.getElementById('genre').value = book.genre || '';
                     document.getElementById('publisher').value = book.publisher || '';
                     document.getElementById('year').value = book.year || '';
@@ -539,42 +400,38 @@
                     document.getElementById('shelve').value = book.shelve || '';
                     document.getElementById('notes').value = book.notes || '';
                 }
-            } else { title.textContent = 'Добавить книгу'; }
+            } else { 
+                titleEl.textContent = 'Новая книга'; 
+            }
             modal.classList.add('active');
         };
 
         window.closeModal = function() {
             document.getElementById('bookModal').classList.remove('active');
             document.getElementById('genreSuggestions').classList.remove('active');
+            // Убираем фокус, чтобы скрылась клавиатура
+            document.activeElement.blur();
         };
 
         window.editBook = function(bookId) { openModal(bookId); };
 
-        // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОИСКА ===
+        // === SEARCH FIX ===
         window.filterBooks = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
             const genre = document.getElementById('genreFilter').value;
             const shelf = document.getElementById('shelfFilter').value;
             
             const filtered = books.filter(book => {
-                const title = (book.title || '').toLowerCase();
-                const author = (book.author || '').toLowerCase();
-                const bookGenre = (book.genre || '').toLowerCase();
-                const publisher = (book.publisher || '').toLowerCase();
-                const notes = (book.notes || '').toLowerCase();
-                const shelfName = (book.shelf || '').toLowerCase();
-                const row = (book.row || '').toLowerCase();
-                const shelve = (book.shelve || '').toLowerCase();
+                // Безопасная проверка на null для iOS
+                const safe = (val) => (val || '').toLowerCase();
                 
                 const matchesSearch = !search || 
-                    title.includes(search) || 
-                    author.includes(search) || 
-                    bookGenre.includes(search) || 
-                    publisher.includes(search) || 
-                    notes.includes(search) ||
-                    shelfName.includes(search) ||
-                    row.includes(search) ||
-                    shelve.includes(search);
+                    safe(book.title).includes(search) || 
+                    safe(book.author).includes(search) || 
+                    safe(book.genre).includes(search) || 
+                    safe(book.publisher).includes(search) || 
+                    safe(book.notes).includes(search) ||
+                    safe(book.shelf).includes(search);
                 
                 const matchesGenre = !genre || book.genre === genre;
                 const matchesShelf = !shelf || book.shelf === shelf;
@@ -587,14 +444,15 @@
 
         window.showGenreSuggestions = function() {
             const input = document.getElementById('genre');
-            const suggestionsDiv = document.getElementById('genreSuggestions');
-            const inputValue = input.value.toLowerCase();
-            const allGenres = getAllGenres();
-            const filtered = allGenres.filter(g => g.toLowerCase().includes(inputValue));
-            if (filtered.length > 0 && inputValue.length > 0) {
-                suggestionsDiv.innerHTML = filtered.map(genre => `<div class="suggestion-item" onclick="selectGenre('${genre}')">${genre}</div>`).join('');
-                suggestionsDiv.classList.add('active');
-            } else { suggestionsDiv.classList.remove('active'); }
+            const div = document.getElementById('genreSuggestions');
+            const val = (input.value || '').toLowerCase();
+            const all = getAllGenres();
+            const filtered = all.filter(g => g.toLowerCase().includes(val));
+            
+            if (filtered.length > 0 && val.length > 0) {
+                div.innerHTML = filtered.map(g => `<div class="suggestion-item" ontouchstart="selectGenre('${g}')" onclick="selectGenre('${g}')">${g}</div>`).join('');
+                div.classList.add('active');
+            } else { div.classList.remove('active'); }
         };
 
         window.selectGenre = function(genre) {
@@ -602,54 +460,57 @@
             document.getElementById('genreSuggestions').classList.remove('active');
         };
 
-        // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+        // === HELPERS ===
         const defaultGenres = ['Фантастика', 'Детектив', 'Роман', 'Научная литература', 'Философия', 'Искусство', 'Психология', 'Поэзия', 'История', 'Биография', 'Приключения', 'Учебная литература', 'Юридическая литература', 'Религия', 'Финансы', 'Логопедия', 'Другое'];
-        const genreEmojis = {'Фантастика': '🚀', 'Детектив': '🔍', 'Роман': '💕', 'Научная литература': '🔬', 'Философия': '🤔', 'Искусство': '', 'Психология': '🧠', 'Поэзия': '✍️', 'История': '📜', 'Биография': '👤', 'Приключения': '⚔️', 'Учебная литература': '📚', 'Юридическая литература': '⚖️', 'Религия': '🙏', 'Финансы': '💰', 'Логопедия': '🗣️', 'Другое': ''};
+        const genreEmojis = {'Фантастика': '', 'Детектив': '🔍', 'Роман': '💕', 'Научная литература': '🔬', 'Философия': '🤔', 'Искусство': '🎨', 'Психология': '🧠', 'Поэзия': '✍️', 'История': '📜', 'Биография': '👤', 'Приключения': '⚔️', 'Учебная литература': '📚', 'Юридическая литература': '⚖️', 'Религия': '🙏', 'Финансы': '💰', 'Логопедия': '🗣️', 'Другое': ''};
 
         function getAllGenres() {
-            const genres = new Set(defaultGenres);
-            books.forEach(book => { if (book.genre) genres.add(book.genre); });
-            return Array.from(genres).sort();
+            const s = new Set(defaultGenres);
+            books.forEach(b => { if (b.genre) s.add(b.genre); });
+            return Array.from(s).sort();
         }
 
         function updateFilters() {
             const genres = getAllGenres();
-            const genreSelect = document.getElementById('genreFilter');
-            const currentGenreValue = genreSelect.value;
-            genreSelect.innerHTML = '<option value="">Все жанры</option>';
-            genres.forEach(genre => { genreSelect.innerHTML += `<option value="${genre}">${genre}</option>`; });
-            genreSelect.value = currentGenreValue;
+            const gSel = document.getElementById('genreFilter');
+            const curG = gSel.value;
+            gSel.innerHTML = '<option value="">Все жанры</option>';
+            genres.forEach(g => { gSel.innerHTML += `<option value="${g}">${g}</option>`; });
+            gSel.value = curG;
 
             const shelves = [...new Set(books.map(b => b.shelf).filter(s => s))];
-            const shelfSelect = document.getElementById('shelfFilter');
-            const currentShelfValue = shelfSelect.value;
-            shelfSelect.innerHTML = '<option value="">Все шкафы</option>';
-            shelves.forEach(shelf => { shelfSelect.innerHTML += `<option value="${shelf}">${shelf}</option>`; });
-            shelfSelect.value = currentShelfValue;
+            const sSel = document.getElementById('shelfFilter');
+            const curS = sSel.value;
+            sSel.innerHTML = '<option value="">Все шкафы</option>';
+            shelves.forEach(s => { sSel.innerHTML += `<option value="${s}">${s}</option>`; });
+            sSel.value = curS;
         }
 
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        function renderBooks(filteredBooks = null) {
+        function renderBooks(list = null) {
             const container = document.getElementById('booksContainer');
-            const emptyState = document.getElementById('emptyState');
-            const booksToRender = filteredBooks || books;
-            if (booksToRender.length === 0) {
+            const empty = document.getElementById('emptyState');
+            const data = list || books;
+            
+            if (data.length === 0) {
                 container.innerHTML = '';
-                emptyState.style.display = 'block';
+                empty.style.display = 'block';
                 document.getElementById('totalBooks').textContent = 0;
                 return;
             }
-            emptyState.style.display = 'none';
-            container.innerHTML = booksToRender.map(book => `
+            
+            empty.style.display = 'none';
+            container.innerHTML = data.map(book => `
                 <div class="book-card">
                     <div class="book-actions">
-                        <button class="btn-small btn-primary" onclick="editBook('${book.id}')" title="Редактировать">✏️</button>
-                        <button class="btn-small btn-danger" onclick="deleteBook('${book.id}')" title="Удалить">🗑️</button>
+                        <button class="btn-small" onclick="editBook('${book.id}')">✏️</button>
+                        <button class="btn-small" onclick="deleteBook('${book.id}')" style="color:#e53e3e">🗑️</button>
                     </div>
                     <div class="book-cover">${genreEmojis[book.genre] || '📖'}</div>
                     <div class="book-title">${escapeHtml(book.title)}</div>
@@ -657,47 +518,35 @@
                     <span class="book-genre">${escapeHtml(book.genre || 'Без жанра')}</span>
                     
                     <div class="book-meta">
-                        ${book.publisher ? `<div class="book-publisher">🏢 ${escapeHtml(book.publisher)}</div>` : ''}
-                        ${book.year ? `<div class="book-publisher">📅 ${book.year} год</div>` : ''}
-                        
+                        ${book.publisher ? `<div class="book-publisher"> ${escapeHtml(book.publisher)}</div>` : ''}
+                        ${book.year ? `<div class="book-publisher">📅 ${book.year}</div>` : ''}
                         ${(book.shelf || book.row || book.shelve) ? `
                             <div class="book-location">
-                                📍 ${book.shelf ? `Шкаф: ${escapeHtml(book.shelf)}` : ''}
-                                ${book.row ? `| Ряд: ${escapeHtml(book.row)}` : ''}
-                                ${book.shelve ? `| Полка: ${escapeHtml(book.shelve)}` : ''}
+                                📍 ${book.shelf ? `Шк: ${escapeHtml(book.shelf)}` : ''}
+                                ${book.row ? `| Р: ${escapeHtml(book.row)}` : ''}
+                                ${book.shelve ? `| П: ${escapeHtml(book.shelve)}` : ''}
                             </div>
                         ` : ''}
-                        
                         ${book.notes ? `<div class="book-notes">💭 ${escapeHtml(book.notes)}</div>` : ''}
                     </div>
                 </div>
             `).join('');
+            
             document.getElementById('totalBooks').textContent = books.length;
         }
 
-        window.exportHTML = function() {
-            const htmlContent = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Библиотека Тимощенко - ${new Date().toLocaleDateString('ru-RU')}</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;background:#f8f9fa;color:#333}h1{color:#667eea;text-align:center;margin-bottom:30px}.book{background:white;padding:25px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}.title{font-size:1.4em;font-weight:bold;margin-bottom:8px}.author{color:#666;margin-bottom:12px}.genre{display:inline-block;background:#667eea;color:white;padding:4px 12px;border-radius:20px;font-size:12px;margin-bottom:12px}.meta{color:#555;font-size:0.95em;line-height:1.6}.location{background:#f0f4ff;padding:10px;border-radius:8px;margin-top:12px;font-size:0.9em}.notes{font-style:italic;color:#666;margin-top:12px;padding:10px;background:#fffaf0;border-left:3px solid #ed8936}</style></head><body><h1>📚 Библиотека Тимощенко</h1><p style="text-align:center;color:#718096;margin-bottom:40px">Всего книг: ${books.length}</p>${books.map(book => `<div class="book"><div class="title">${escapeHtml(book.title)}</div><div class="author">${escapeHtml(book.author)}</div>${book.genre ? `<span class="genre">${escapeHtml(book.genre)}</span>` : ''}<div class="meta">${book.publisher ? `<div>🏢 Издательство: ${book.publisher}</div>` : ''}${book.year ? `<div>📅 Год: ${book.year}</div>` : ''}</div>${(book.shelf || book.row || book.shelve) ? `<div class="location">📍 ${book.shelf ? `Шкаф: ${book.shelf}` : ''}${book.row ? ` | Ряд: ${book.row}` : ''}${book.shelve ? ` | Полка: ${book.shelve}` : ''}</div>` : ''}${book.notes ? `<div class="notes">💭 ${escapeHtml(book.notes)}</div>` : ''}</div>`).join('')}</body></html>`;
-            const blob = new Blob([htmlContent], {type: 'text/html'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `library_timoschenko_${new Date().toISOString().split('T')[0]}.html`;
-            a.click();
+        // Закрытие модалки по клику вне
+        window.onclick = function(e) {
+            if (e.target.id === 'bookModal') closeModal();
         };
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('bookModal');
-            if (event.target === modal) closeModal();
-        };
-
+        // Скрытие подсказок жанров
         document.addEventListener('click', function(e) {
-            const wrapper = document.querySelector('.genre-input-wrapper');
-            if (wrapper && !wrapper.contains(e.target)) {
+            if (!document.querySelector('.genre-input-wrapper')?.contains(e.target)) {
                 document.getElementById('genreSuggestions').classList.remove('active');
             }
         });
 
-        // Запуск при загрузке страницы
         loadBooks();
     </script>
 </body>
