@@ -4,71 +4,339 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Библиотека Тимощенко</title>
+    <!-- Подключаем современный шрифт Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; padding: 20px;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 12px 40px rgba(102, 126, 234, 0.25);
+            --text-main: #2d3748;
+            --text-secondary: #718096;
+            --accent-color: #667eea;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed; /* Градиент не двигается при скролле */
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+
         .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; color: white; margin-bottom: 30px; }
-        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .stats { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 15px; }
-        .stat-item { background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 20px; backdrop-filter: blur(10px); }
+
+        /* --- Header --- */
+        header { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 40px; 
+            animation: fadeInDown 0.8s ease-out;
+        }
         
-        .controls { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-        button { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); }
-        .btn-secondary { background: #48bb78; color: white; }
-        .btn-secondary:hover { background: #38a169; }
-        .btn-danger { background: #f56565; color: white; }
-        .btn-danger:hover { background: #e53e3e; }
+        header h1 { 
+            font-size: 3em; 
+            font-weight: 700; 
+            margin-bottom: 15px; 
+            letter-spacing: -1px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+        }
+
+        .stats { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         
-        .search-filter { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        input, select { padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 100%; }
-        input:focus, select:focus { outline: none; border-color: #667eea; }
+        .stat-item { 
+            background: rgba(255,255,255,0.2); 
+            padding: 12px 24px; 
+            border-radius: 50px; 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: transform 0.3s;
+        }
+        .stat-item:hover { transform: translateY(-3px); background: rgba(255,255,255,0.3); }
+
+        /* --- Controls Panel (Glass Effect) --- */
+        .controls { 
+            background: var(--glass-bg); 
+            padding: 25px; 
+            border-radius: var(--radius-lg); 
+            margin-bottom: 30px; 
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--glass-border);
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
         
-        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .book-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; position: relative; }
-        .book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .book-cover { font-size: 4em; text-align: center; margin-bottom: 15px; }
-        .book-title { font-size: 1.3em; font-weight: bold; color: #2d3748; margin-bottom: 8px; }
-        .book-author { color: #718096; margin-bottom: 5px; }
-        .book-genre { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 10px; }
-        .book-publisher { color: #4a5568; font-size: 14px; margin-bottom: 8px; }
-        .book-location { background: #edf2f7; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 13px; color: #2d3748; }
-        .book-notes { margin-top: 10px; color: #4a5568; font-size: 14px; font-style: italic; }
-        .book-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
-        .btn-small { padding: 5px 10px; font-size: 12px; border-radius: 5px; }
+        button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: var(--radius-md); 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { 
+            background: var(--accent-color); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:hover { 
+            background: #5a6fd6; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary { 
+            background: white; 
+            color: var(--text-main); 
+            border: 1px solid #e2e8f0;
+        }
+        .btn-secondary:hover { 
+            background: #f7fafc; 
+            border-color: #cbd5e0; 
+            transform: translateY(-2px);
+        }
+
+        .search-filter { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr; 
+            gap: 15px; 
+        }
+
+        input, select { 
+            padding: 12px 16px; 
+            border: 2px solid transparent; 
+            background: #f7fafc;
+            border-radius: var(--radius-md); 
+            font-size: 14px; 
+            width: 100%; 
+            font-family: inherit;
+            transition: all 0.3s;
+        }
         
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { color: #2d3748; }
-        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; color: #4a5568; font-weight: 600; }
-        textarea { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; resize: vertical; min-height: 80px; }
-        .location-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        input:focus, select:focus { 
+            outline: none; 
+            background: white;
+            border-color: var(--accent-color); 
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* --- Books Grid --- */
+        .books-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 25px; 
+        }
+
+        .book-card { 
+            background: white; 
+            border-radius: var(--radius-lg); 
+            padding: 25px; 
+            box-shadow: var(--shadow-soft); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative; 
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: var(--shadow-hover); 
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .book-cover { 
+            font-size: 3.5em; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+        .book-card:hover .book-cover { transform: scale(1.1) rotate(5deg); }
+
+        .book-title { 
+            font-size: 1.25em; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            margin-bottom: 8px; 
+            line-height: 1.3;
+        }
+
+        .book-author { 
+            color: var(--text-secondary); 
+            margin-bottom: 12px; 
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .book-genre { 
+            display: inline-block; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 6px 14px; 
+            border-radius: 50px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            margin-bottom: 12px; 
+            align-self: flex-start;
+            letter-spacing: 0.5px;
+        }
+
+        .book-meta {
+            margin-top: auto; /* Прижимает мета-информацию к низу карточки */
+            padding-top: 15px;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .book-publisher { color: var(--text-secondary); font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;}
         
+        .book-location { 
+            background: #f0f4ff; 
+            padding: 10px; 
+            border-radius: var(--radius-sm); 
+            margin-top: 8px; 
+            font-size: 12px; 
+            color: #4a5568; 
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .book-notes { 
+            margin-top: 12px; 
+            color: var(--text-secondary); 
+            font-size: 13px; 
+            font-style: italic; 
+            line-height: 1.5;
+            background: #fffaf0;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid #ed8936;
+        }
+
+        .book-actions { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            display: flex; 
+            gap: 8px; 
+            opacity: 0; 
+            transition: opacity 0.3s;
+        }
+        .book-card:hover .book-actions { opacity: 1; }
+
+        .btn-small { 
+            padding: 8px; 
+            font-size: 14px; 
+            border-radius: 50%; 
+            width: 36px; 
+            height: 36px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-small:hover { transform: scale(1.1); }
+        .btn-small.btn-danger:hover { background: #fff5f5; border-color: #feb2b2; color: #c53030; }
+        .btn-small.btn-primary:hover { background: #ebf4ff; border-color: #bee3f8; color: #3182ce; }
+
+        /* --- Modal --- */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(5px);
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content { 
+            background: white; 
+            padding: 35px; 
+            border-radius: var(--radius-lg); 
+            max-width: 550px; 
+            width: 90%; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        .modal.active .modal-content { transform: translateY(0); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-header h2 { color: var(--text-main); font-size: 1.5em; font-weight: 700; }
+        .close-btn { 
+            background: #f7fafc; border: none; font-size: 20px; cursor: pointer; 
+            color: var(--text-secondary); width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .close-btn:hover { background: #edf2f7; color: var(--text-main); transform: rotate(90deg); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 600; font-size: 14px; }
+        
+        textarea { 
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: var(--radius-md); 
+            resize: vertical; min-height: 100px; font-family: inherit; transition: all 0.3s;
+        }
+        textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
+
+        .location-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
         .genre-input-wrapper { position: relative; }
-        .genre-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; }
+        .genre-suggestions { 
+            position: absolute; top: 100%; left: 0; right: 0; 
+            background: white; border: 1px solid #e2e8f0; border-top: none; 
+            border-radius: 0 0 var(--radius-md) var(--radius-md); 
+            max-height: 200px; overflow-y: auto; z-index: 100; display: none; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
         .genre-suggestions.active { display: block; }
-        .suggestion-item { padding: 10px; cursor: pointer; transition: background 0.2s; }
-        .suggestion-item:hover { background: #f7fafc; }
-        
-        .empty-state { text-align: center; color: white; padding: 60px 20px; }
-        .empty-state h3 { font-size: 1.5em; margin-bottom: 10px; }
-        
+        .suggestion-item { padding: 12px 16px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .suggestion-item:hover { background: #f7fafc; color: var(--accent-color); }
+
+        .empty-state { text-align: center; color: white; padding: 80px 20px; animation: fadeIn 1s; }
+        .empty-state h3 { font-size: 1.8em; margin-bottom: 15px; font-weight: 600; }
+        .empty-state p { opacity: 0.9; font-size: 1.1em; }
+
+        /* Animations */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         @media (max-width: 768px) {
             .search-filter { grid-template-columns: 1fr; }
             .location-fields { grid-template-columns: 1fr; }
-            header h1 { font-size: 1.8em; }
+            header h1 { font-size: 2.2em; }
+            .book-actions { opacity: 1; } /* На мобильных кнопки видны всегда */
+            .btn-group { justify-content: stretch; }
+            .btn-group button { flex: 1; justify-content: center; }
         }
     </style>
 </head>
@@ -77,21 +345,21 @@
         <header>
             <h1>📚 Библиотека Тимощенко</h1>
             <div class="stats">
-                <div class="stat-item">Всего книг: <span id="totalBooks">0</span></div>
+                <div class="stat-item">📖 Всего книг: <span id="totalBooks">0</span></div>
             </div>
         </header>
 
         <div class="controls">
             <div class="btn-group">
                 <button class="btn-primary" onclick="openModal()">➕ Добавить книгу</button>
-                <button class="btn-secondary" onclick="exportJSON()"> Экспорт JSON</button>
-                <button class="btn-secondary" onclick="exportHTML()">📄 Экспорт HTML</button>
+                <button class="btn-secondary" onclick="exportJSON()">💾 Экспорт JSON</button>
+                <button class="btn-secondary" onclick="exportHTML()"> Экспорт HTML</button>
                 <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 Импорт</button>
                 <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(event)">
             </div>
             
             <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Поиск по названию или автору..." oninput="filterBooks()">
+                <input type="text" id="searchInput" placeholder=" Поиск по названию, автору, жанру..." oninput="filterBooks()">
                 <select id="genreFilter" onchange="filterBooks()">
                     <option value="">Все жанры</option>
                 </select>
@@ -105,7 +373,7 @@
         
         <div id="emptyState" class="empty-state" style="display:none">
             <h3>Библиотека пуста</h3>
-            <p>Добавьте свою первую книгу!</p>
+            <p>Добавьте свою первую книгу, чтобы начать коллекцию!</p>
         </div>
     </div>
 
@@ -121,18 +389,18 @@
                 
                 <div class="form-group">
                     <label>Название *</label>
-                    <input type="text" id="title" required>
+                    <input type="text" id="title" required placeholder="Введите название книги">
                 </div>
                 
                 <div class="form-group">
                     <label>Автор *</label>
-                    <input type="text" id="author" required>
+                    <input type="text" id="author" required placeholder="Имя автора">
                 </div>
                 
                 <div class="form-group">
-                    <label>Жанр (выберите или введите свой)</label>
+                    <label>Жанр</label>
                     <div class="genre-input-wrapper">
-                        <input type="text" id="genre" placeholder="Начните вводить..." oninput="showGenreSuggestions()" onfocus="showGenreSuggestions()">
+                        <input type="text" id="genre" placeholder="Начните вводить или выберите..." oninput="showGenreSuggestions()" onfocus="showGenreSuggestions()">
                         <div id="genreSuggestions" class="genre-suggestions"></div>
                     </div>
                 </div>
@@ -144,7 +412,7 @@
                 
                 <div class="form-group">
                     <label>Год издания</label>
-                    <input type="number" id="year" min="1000" max="2026">
+                    <input type="number" id="year" min="1000" max="2026" placeholder="2024">
                 </div>
                 
                 <div class="form-group">
@@ -161,7 +429,7 @@
                     <textarea id="notes" placeholder="Ваши впечатления, цитаты, мысли..."></textarea>
                 </div>
                 
-                <button type="submit" class="btn-primary" style="width:100%">Сохранить</button>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content: center; padding: 14px;">Сохранить книгу</button>
             </form>
         </div>
     </div>
@@ -282,16 +550,38 @@
 
         window.editBook = function(bookId) { openModal(bookId); };
 
+        // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОИСКА ===
         window.filterBooks = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
             const genre = document.getElementById('genreFilter').value;
             const shelf = document.getElementById('shelfFilter').value;
+            
             const filtered = books.filter(book => {
-                const matchesSearch = !search || book.title.toLowerCase().includes(search) || book.author.toLowerCase().includes(search);
+                const title = (book.title || '').toLowerCase();
+                const author = (book.author || '').toLowerCase();
+                const bookGenre = (book.genre || '').toLowerCase();
+                const publisher = (book.publisher || '').toLowerCase();
+                const notes = (book.notes || '').toLowerCase();
+                const shelfName = (book.shelf || '').toLowerCase();
+                const row = (book.row || '').toLowerCase();
+                const shelve = (book.shelve || '').toLowerCase();
+                
+                const matchesSearch = !search || 
+                    title.includes(search) || 
+                    author.includes(search) || 
+                    bookGenre.includes(search) || 
+                    publisher.includes(search) || 
+                    notes.includes(search) ||
+                    shelfName.includes(search) ||
+                    row.includes(search) ||
+                    shelve.includes(search);
+                
                 const matchesGenre = !genre || book.genre === genre;
                 const matchesShelf = !shelf || book.shelf === shelf;
+                
                 return matchesSearch && matchesGenre && matchesShelf;
             });
+            
             renderBooks(filtered);
         };
 
@@ -314,7 +604,7 @@
 
         // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
         const defaultGenres = ['Фантастика', 'Детектив', 'Роман', 'Научная литература', 'Философия', 'Искусство', 'Психология', 'Поэзия', 'История', 'Биография', 'Приключения', 'Учебная литература', 'Юридическая литература', 'Религия', 'Финансы', 'Логопедия', 'Другое'];
-        const genreEmojis = {'Фантастика': '', 'Детектив': '🔍', 'Роман': '💕', 'Научная литература': '🔬', 'Философия': '🤔', 'Искусство': '🎨', 'Психология': '🧠', 'Поэзия': '️', 'История': '📜', 'Биография': '👤', 'Приключения': '⚔️', 'Учебная литература': '📚', 'Юридическая литература': '⚖️', 'Религия': '🙏', 'Финансы': '💰', 'Логопедия': '🗣️', 'Другое': '📖'};
+        const genreEmojis = {'Фантастика': '🚀', 'Детектив': '🔍', 'Роман': '💕', 'Научная литература': '🔬', 'Философия': '🤔', 'Искусство': '', 'Психология': '🧠', 'Поэзия': '✍️', 'История': '📜', 'Биография': '👤', 'Приключения': '⚔️', 'Учебная литература': '📚', 'Юридическая литература': '⚖️', 'Религия': '🙏', 'Финансы': '💰', 'Логопедия': '🗣️', 'Другое': ''};
 
         function getAllGenres() {
             const genres = new Set(defaultGenres);
@@ -358,24 +648,35 @@
             container.innerHTML = booksToRender.map(book => `
                 <div class="book-card">
                     <div class="book-actions">
-                        <button class="btn-small btn-primary" onclick="editBook('${book.id}')">✏️</button>
-                        <button class="btn-small btn-danger" onclick="deleteBook('${book.id}')">🗑️</button>
+                        <button class="btn-small btn-primary" onclick="editBook('${book.id}')" title="Редактировать">✏️</button>
+                        <button class="btn-small btn-danger" onclick="deleteBook('${book.id}')" title="Удалить">🗑️</button>
                     </div>
                     <div class="book-cover">${genreEmojis[book.genre] || '📖'}</div>
                     <div class="book-title">${escapeHtml(book.title)}</div>
                     <div class="book-author">${escapeHtml(book.author)}</div>
                     <span class="book-genre">${escapeHtml(book.genre || 'Без жанра')}</span>
-                    ${book.publisher ? `<div class="book-publisher">📖 ${escapeHtml(book.publisher)}</div>` : ''}
-                    ${book.year ? `<div style="color:#718096;font-size:14px;margin-top:5px">📅 ${book.year}</div>` : ''}
-                    ${(book.shelf || book.row || book.shelve) ? `<div class="book-location"> 📍 ${book.shelf ? `Шкаф: ${escapeHtml(book.shelf)}` : ''}${book.row ? `| Ряд: ${escapeHtml(book.row)}` : ''}${book.shelve ? `| Полка: ${escapeHtml(book.shelve)}` : ''}</div>` : ''}
-                    ${book.notes ? `<div class="book-notes">${escapeHtml(book.notes)}</div>` : ''}
+                    
+                    <div class="book-meta">
+                        ${book.publisher ? `<div class="book-publisher">🏢 ${escapeHtml(book.publisher)}</div>` : ''}
+                        ${book.year ? `<div class="book-publisher">📅 ${book.year} год</div>` : ''}
+                        
+                        ${(book.shelf || book.row || book.shelve) ? `
+                            <div class="book-location">
+                                📍 ${book.shelf ? `Шкаф: ${escapeHtml(book.shelf)}` : ''}
+                                ${book.row ? `| Ряд: ${escapeHtml(book.row)}` : ''}
+                                ${book.shelve ? `| Полка: ${escapeHtml(book.shelve)}` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        ${book.notes ? `<div class="book-notes">💭 ${escapeHtml(book.notes)}</div>` : ''}
+                    </div>
                 </div>
             `).join('');
             document.getElementById('totalBooks').textContent = books.length;
         }
 
         window.exportHTML = function() {
-            const htmlContent = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Библиотека Тимощенко - ${new Date().toLocaleDateString('ru-RU')}</title><style>body{font-family:Arial,sans-serif;padding:40px;background:#f5f5f5}h1{color:#667eea;text-align:center}.book{background:white;padding:20px;margin:15px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.title{font-size:1.3em;font-weight:bold;color:#2d3748}.author{color:#718096;margin:5px 0}.genre{display:inline-block;background:#667eea;color:white;padding:4px 12px;border-radius:12px;font-size:12px;margin:5px 0}.meta{color:#4a5568;font-size:0.9em;margin-top:10px}.location{background:#edf2f7;padding:8px;border-radius:5px;margin-top:10px;font-size:0.9em}.notes{font-style:italic;color:#4a5568;margin-top:10px}</style></head><body><h1>📚 Библиотека Тимощенко</h1><p style="text-align:center;color:#718096">Всего книг: ${books.length}</p>${books.map(book => `<div class="book"><div class="title">${escapeHtml(book.title)}</div><div class="author">${escapeHtml(book.author)}</div>${book.genre ? `<span class="genre">${escapeHtml(book.genre)}</span>` : ''}<div class="meta">${book.publisher ? `Издательство: ${book.publisher}` : ''}${book.year ? `| Год: ${book.year}` : ''}</div>${(book.shelf || book.row || book.shelve) ? `<div class="location"> 📍 ${book.shelf ? `Шкаф: ${book.shelf}` : ''}${book.row ? `| Ряд: ${book.row}` : ''}${book.shelve ? `| Полка: ${book.shelve}` : ''}</div>` : ''}${book.notes ? `<div class="notes">${escapeHtml(book.notes)}</div>` : ''}</div>`).join('')}</body></html>`;
+            const htmlContent = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Библиотека Тимощенко - ${new Date().toLocaleDateString('ru-RU')}</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;background:#f8f9fa;color:#333}h1{color:#667eea;text-align:center;margin-bottom:30px}.book{background:white;padding:25px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}.title{font-size:1.4em;font-weight:bold;margin-bottom:8px}.author{color:#666;margin-bottom:12px}.genre{display:inline-block;background:#667eea;color:white;padding:4px 12px;border-radius:20px;font-size:12px;margin-bottom:12px}.meta{color:#555;font-size:0.95em;line-height:1.6}.location{background:#f0f4ff;padding:10px;border-radius:8px;margin-top:12px;font-size:0.9em}.notes{font-style:italic;color:#666;margin-top:12px;padding:10px;background:#fffaf0;border-left:3px solid #ed8936}</style></head><body><h1>📚 Библиотека Тимощенко</h1><p style="text-align:center;color:#718096;margin-bottom:40px">Всего книг: ${books.length}</p>${books.map(book => `<div class="book"><div class="title">${escapeHtml(book.title)}</div><div class="author">${escapeHtml(book.author)}</div>${book.genre ? `<span class="genre">${escapeHtml(book.genre)}</span>` : ''}<div class="meta">${book.publisher ? `<div>🏢 Издательство: ${book.publisher}</div>` : ''}${book.year ? `<div>📅 Год: ${book.year}</div>` : ''}</div>${(book.shelf || book.row || book.shelve) ? `<div class="location">📍 ${book.shelf ? `Шкаф: ${book.shelf}` : ''}${book.row ? ` | Ряд: ${book.row}` : ''}${book.shelve ? ` | Полка: ${book.shelve}` : ''}</div>` : ''}${book.notes ? `<div class="notes">💭 ${escapeHtml(book.notes)}</div>` : ''}</div>`).join('')}</body></html>`;
             const blob = new Blob([htmlContent], {type: 'text/html'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
